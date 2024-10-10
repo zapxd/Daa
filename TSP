@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -36,6 +37,8 @@ struct Node* newNode(int parentMatrix[N][N], int path[], int level, int i, int j
         node->reducedMatrix[k][j] = INT_MAX;
     }
 
+    node->reducedMatrix[j][0] = INT_MAX;
+
     return node;
 }
 
@@ -51,7 +54,9 @@ int rowReduction(int reducedMatrix[N][N], int row[N]) {
         if (row[i] != INT_MAX) {
             cost += row[i];
             for (int j = 0; j < N; j++) {
-                reducedMatrix[i][j] -= row[i];
+                if (reducedMatrix[i][j] != INT_MAX) {
+                    reducedMatrix[i][j] -= row[i];
+                }
             }
         }
     }
@@ -70,7 +75,9 @@ int columnReduction(int reducedMatrix[N][N], int col[N]) {
         if (col[i] != INT_MAX) {
             cost += col[i];
             for (int j = 0; j < N; j++) {
-                reducedMatrix[j][i] -= col[i];
+                if (reducedMatrix[j][i] != INT_MAX) {
+                    reducedMatrix[j][i] -= col[i];
+                }
             }
         }
     }
@@ -92,7 +99,7 @@ void solveTSP(int costMatrix[N][N]) {
     int pqSize = 0;
 
     int path[N] = {0};
-    struct Node* root = newNode(costMatrix, path, 0, 0, -1);
+    struct Node* root = newNode(costMatrix, path, 0, 0, 0);
     root->cost = calculateCost(root->reducedMatrix);
 
     pq[0] = root;
@@ -117,19 +124,17 @@ void solveTSP(int costMatrix[N][N]) {
             for (int i = 0; i < N; i++) {
                 printf("%d ", minNode->path[i]);
             }
-            printf("\n");
+            printf("0\n");
             return;
         }
 
         for (int i = 0; i < N; i++) {
             if (minNode->reducedMatrix[minNode->vertex][i] != INT_MAX) {
                 struct Node* child = newNode(minNode->reducedMatrix, minNode->path, minNode->level, minNode->vertex, i);
-                child->cost = calculateCost(child->reducedMatrix);
+                child->cost = minNode->cost + minNode->reducedMatrix[minNode->vertex][i] + calculateCost(child->reducedMatrix);
 
-                if (child->cost < minCost) {
-                    pq[pqSize] = child;
-                    pqSize++;
-                }
+                pq[pqSize] = child;
+                pqSize++;
             }
         }
 

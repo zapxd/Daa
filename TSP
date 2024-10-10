@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define N 4
+
+struct Node {
+    int level;
+    int path[N];
+    int reducedMatrix[N][N];
+    int cost;
+    int vertex;
+    int parent;
+};
+
+struct Node* newNode(int parentMatrix[N][N], int path[], int level, int i, int j) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+
+    for (int k = 0; k <= level; k++) {
+        node->path[k] = path[k];
+    }
+
+    for (int x = 0; x < N; x++) {
+        for (int y = 0; y < N; y++) {
+            node->reducedMatrix[x][y] = parentMatrix[x][y];
+        }
+    }
+
+    node->path[level + 1] = j;
+    node->vertex = j;
+    node->level = level + 1;
+    node->parent = i;
+
+    for (int k = 0; k < N; k++) {
+        node->reducedMatrix[i][k] = INT_MAX;
+        node->reducedMatrix[k][j] = INT_MAX;
+    }
+
+    return node;
+}
+
+int rowReduction(int reducedMatrix[N][N], int row[N]) {
+    int cost = 0;
+    for (int i = 0; i < N; i++) {
+        row[i] = INT_MAX;
+        for (int j = 0; j < N; j++) {
+            if (reducedMatrix[i][j] < row[i]) {
+                row[i] = reducedMatrix[i][j];
+            }
+        }
+        if (row[i] != INT_MAX) {
+            cost += row[i];
+            for (int j = 0; j < N; j++) {
+                reducedMatrix[i][j] -= row[i];
+            }
+        }
+    }
+    return cost;
+}
+
+int columnReduction(int reducedMatrix[N][N], int col[N]) {
+    int cost = 0;
+    for (int i = 0; i < N; i++) {
+        col[i] = INT_MAX;
+        for (int j = 0; j < N; j++) {
+            if (reducedMatrix[j][i] < col[i]) {
+                col[i] = reducedMatrix[j][i];
+            }
+        }
+        if (col[i] != INT_MAX) {
+            cost += col[i];
+            for (int j = 0; j < N; j++) {
+                reducedMatrix[j][i] -= col[i];
+            }
+        }
+    }
+    return cost;
+}
+
+int calculateCost(int reducedMatrix[N][N]) {
+    int row[N], col[N];
+    int cost = 0;
+
+    cost += rowReduction(reducedMatrix, row);
+    cost += columnReduction(reducedMatrix, col);
+
+    return cost;
+}
+
+void solveTSP(int costMatrix[N][N]) {
+    struct Node* pq[1000];
+    int pqSize = 0;
+
+    int path[N] = {0};
+    struct Node* root = newNode(costMatrix, path, 0, 0, -1);
+    root->cost = calculateCost(root->reducedMatrix);
+
+    pq[0] = root;
+    pqSize = 1;
+
+    while (pqSize > 0) {
+        int minCost = INT_MAX, minIndex = -1;
+        for (int i = 0; i < pqSize; i++) {
+            if (pq[i]->cost < minCost) {
+                minCost = pq[i]->cost;
+                minIndex = i;
+            }
+        }
+
+        struct Node* minNode = pq[minIndex];
+        pq[minIndex] = pq[pqSize - 1];
+        pqSize--;
+
+        if (minNode->level == N - 1) {
+            printf("Minimum cost = %d\n", minNode->cost);
+            printf("Path: ");
+            for (int i = 0; i < N; i++) {
+                printf("%d ", minNode->path[i]);
+            }
+            printf("\n");
+            return;
+        }
+
+        for (int i = 0; i < N; i++) {
+            if (minNode->reducedMatrix[minNode->vertex][i] != INT_MAX) {
+                struct Node* child = newNode(minNode->reducedMatrix, minNode->path, minNode->level, minNode->vertex, i);
+                child->cost = calculateCost(child->reducedMatrix);
+
+                if (child->cost < minCost) {
+                    pq[pqSize] = child;
+                    pqSize++;
+                }
+            }
+        }
+
+        free(minNode);
+    }
+}
+
+int main() {
+    int costMatrix[N][N] = {
+        {0, 10, 15, 20},
+        {10, 0, 25, 25},
+        {15, 25, 0, 30},
+        {20, 25, 30, 0}
+    };
+
+    solveTSP(costMatrix);
+
+    return 0;
+}
+

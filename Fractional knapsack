@@ -1,0 +1,56 @@
+#include <stdio.h>
+
+int main() {
+    float weight[50], profit[50], ratio[50], totalProfit = 0;
+    int totalItems, i, j;
+    float capacity = 1000, temp;
+
+    printf("Enter the number of the items : ");
+    scanf("%d", &totalItems);
+
+    printf("Initializing the Weight and Profits...\n");
+    for (i = 0; i < totalItems; i++) {
+        printf("Enter the weight of the item [%d] : ", i + 1);
+        scanf("%f", &weight[i]);
+        printf("Enter the profit of the item [%d] : ", i + 1);
+        scanf("%f", &profit[i]);
+    }
+
+    printf("Initializing the Ratio array...\n");
+    for (i = 0; i < totalItems; i++) {
+        ratio[i] = profit[i] / weight[i];
+    }
+
+    printf("Sorting according to ratio...\n");
+    for (i = 0; i < totalItems; i++) {
+        for (j = i + 1; j < totalItems; j++) {
+            if (ratio[i] < ratio[j]) {
+                temp = ratio[i];
+                ratio[i] = ratio[j];
+                ratio[j] = temp;
+
+                temp = profit[i];
+                profit[i] = profit[j];
+                profit[j] = temp;
+
+                temp = weight[i];
+                weight[i] = weight[j];
+                weight[j] = temp;
+            }
+        }
+    }
+
+    printf("Performing Knapsack Algorithm...\n");
+    for (i = 0; i < totalItems; i++) {
+        if (weight[i] > capacity) {
+            totalProfit = totalProfit + (ratio[i] * capacity);
+            break;
+        } else {
+            totalProfit = totalProfit + profit[i];
+            capacity = capacity - weight[i];
+        }
+    }
+
+    printf("\nThe maximum profit is : %f\n", totalProfit);
+    return 0;
+}

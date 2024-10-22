@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int knapsack(int M, int w[], int val[], int n) {
+    int i, j;
+    int dp[n+1][M+1];
+    
+    for(i = 0; i <= n; i++) {
+        for(j = 0; j <= M; j++) {
+            if(i == 0 || j == 0) {
+                dp[i][j] = 0;
+            } else if(w[i-1] <= j) {
+                dp[i][j] = max(val[i-1] + dp[i-1][j-w[i-1]], dp[i-1][j]);
+            } else {
+                dp[i][j] = dp[i-1][j];
+            }
+        }
+    }
+    
+    return dp[n][M];
+}
+
+int main() {
+    int M; // Maximum weight of the knapsack
+    int n; // Number of items
+    int i;
+    
+    printf("Enter the maximum weight of the knapsack: ");
+    scanf("%d", &M);
+    
+    printf("Enter the number of items of the knapsack: ");
+    scanf("%d", &n);
+    
+    int w[n], val[n];
+    
+    for(i = 0; i < n; i++) {
+        printf("Enter the weight of item %d: ", i+1);
+        scanf("%d", &w[i]);
+    }
+    
+    for(i = 0; i < n; i++) {
+        printf("Enter the value of item %d: ", i+1);
+        scanf("%d", &val[i]);
+    }
+    
+    printf("Maximum value that can be obtained: %d\n", knapsack(M, w, val, n));
+    
+    return 0;
+}

@@ -4,42 +4,44 @@
 
 int board[20], count;
 
+void print(int n);
+int place(int row, int column);
+void queen(int row, int n);
+
 int main() {
-    int n, i, j;
-    void queen(int row, int n);
-    
-    printf("\n\nQueen problem using backtracking -");
-    printf("\n\nEnter number of queens: ");
+    int n;
+    printf("N Queen problem using Backtracking.");
+    printf("\n\nEnter number of queens : ");
     scanf("%d", &n);
-    
-    queen(1, n);
+
+    count = 0; // Initialize the solution count
+    queen(1, n); // Start the backtracking process
+
+    if (count == 0) {
+        printf("\n\nNo solution exists for %d queens.\n", n);
+    }
+
     return 0;
 }
 
 void print(int n) {
     int i, j;
-    printf("\n\nSolution %d:\n\n", ++count);
-    
-    for (i = 1; i <= n; i++)
-        printf("\t%d", i);
-    
-    for (i = 1; i <= n; i++) {
-        printf("\n\n%d", i);
-        for (j = 1; j <= n; j++) {
+    printf("\n\nSolution %d : \n\n", ++count);
+    for (i = 1; i <= n; ++i) {
+        for (j = 1; j <= n; ++j) {
             if (board[i] == j)
                 printf("\tQ");
             else
                 printf("\t-");
         }
+        printf("\n");
     }
 }
 
 int place(int row, int column) {
     int i;
-    for (i = 1; i <= row - 1; i++) {
-        if (board[i] == column)
-            return 0;
-        else if (abs(board[i] - column) == abs(i - row))
+    for (i = 1; i <= row - 1; ++i) {
+        if (board[i] == column || abs(board[i] - column) == abs(i - row))
             return 0;
     }
     return 1;
@@ -57,3 +59,4 @@ void queen(int row, int n) {
         }
     }
 }
+

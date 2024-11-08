@@ -1,56 +1,81 @@
-#include <stdio.h>
+#include<stdio.h>
 
-int main() {
-    float weight[50], profit[50], ratio[50], totalProfit = 0;
-    int totalItems, i, j;
-    float capacity = 1000, temp;
 
-    printf("Enter the number of the items : ");
-    scanf("%d", &totalItems);
+int main(){
 
-    printf("Initializing the Weight and Profits...\n");
-    for (i = 0; i < totalItems; i++) {
-        printf("Enter the weight of the item [%d] : ", i + 1);
-        scanf("%f", &weight[i]);
-        printf("Enter the profit of the item [%d] : ", i + 1);
-        scanf("%f", &profit[i]);
-    }
 
-    printf("Initializing the Ratio array...\n");
-    for (i = 0; i < totalItems; i++) {
-        ratio[i] = profit[i] / weight[i];
-    }
+ int n;
+ printf("Enter total no. of objects: ");
+ scanf("%d", &n);
+ 
+ int m;
+ printf("Enter the value of m: ");
+ scanf("%d", &m);
+ 
+ int v[n];
+ printf("Enter the values: ");
+ for(int i = 0; i < n; i++){
+ 	scanf("%d", &v[i]);
+ }
+ 
+ int w[n];
+ printf("Enter the weights: ");
+ for(int i = 0; i < n; i++){
+ 	scanf("%d", &w[i]);
+ }
+ 
+ float f[n];
+ 
+ for(int i = 0; i< n; i++){
+ 	f[i] = (float)v[i] / w[i];
+ }
+ 
+ for(int i = 0; i < n -1; i++){
+ 
+ 	for(int j = 0; j < n - i -1; j++){
+ 		if(f[j] < f[j+1]){
+ 		float temp = f[j];
+ 		f[j] = f[j + 1];
+ 		f[j+1] = temp;
+ 		
+ 		int tv = v[j];
+ 		v[j] = v[j + 1];
+ 		v[j+1] = tv;
+ 		
+ 		int tw = w[j];
+ 		w[j] = w[j + 1];
+ 		w[j+1] = tw;
+ 		}
+ 				
+ 	}
+ 
+ }
+ 
+ float sp = 0;
+ int sw = 0;
+ 
+ 
+ for(int i = 0; i < n; i++){
+ 	int tempsw = sw + w[i];
+ 	if(tempsw < m){
+ 		sw = tempsw;
+ 		sp = sp + v[i];
+ 	}
+ 	else if(tempsw == m){
+ 		sw = tempsw;
+ 		sp = sp + v[i];
+ 		break;
+ 	}
+ 	else{
+ 		float frac = (float)(m-sw) / (float)w[i];
+ 		printf("%f\n\n", frac);
+ 		sw = m;
+ 		sp = (float)sp + (float)(v[i] * frac);
+ 		break;
+ 	}		
+ }
+ printf("SW : %d \n", sw);
+ printf("SP : %f \n", sp);
 
-    printf("Sorting according to ratio...\n");
-    for (i = 0; i < totalItems; i++) {
-        for (j = i + 1; j < totalItems; j++) {
-            if (ratio[i] < ratio[j]) {
-                temp = ratio[i];
-                ratio[i] = ratio[j];
-                ratio[j] = temp;
-
-                temp = profit[i];
-                profit[i] = profit[j];
-                profit[j] = temp;
-
-                temp = weight[i];
-                weight[i] = weight[j];
-                weight[j] = temp;
-            }
-        }
-    }
-
-    printf("Performing Knapsack Algorithm...\n");
-    for (i = 0; i < totalItems; i++) {
-        if (weight[i] > capacity) {
-            totalProfit = totalProfit + (ratio[i] * capacity);
-            break;
-        } else {
-            totalProfit = totalProfit + profit[i];
-            capacity = capacity - weight[i];
-        }
-    }
-
-    printf("\nThe maximum profit is : %f\n", totalProfit);
-    return 0;
+return 0;
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// the time complexity of this implementation of the Bellman-Ford algorithm is O(V×E) V - vertices , E - edges
 int Bellman_Ford(int G[20][20], int V, int E, int edge[20][2]) {
     int i, u, v, k, distance[20], parent[20], S, flag;
     for (i = 0; i < V; i++) {

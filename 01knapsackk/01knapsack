@@ -50,3 +50,22 @@ int main() {
     
     return 0;
 }
+
+
+
+//input output
+Enter the maximum weight of the knapsack: 8
+Enter the number of items of the knapsack: 4
+Enter the weight of item 1: 2
+Enter the weight of item 2: 3
+Enter the weight of item 3: 4
+Enter the weight of item 4: 5
+Enter the value of item 1: 1
+Enter the value of item 2: 2
+Enter the value of item 3: 5
+Enter the value of item 4: 6
+Maximum value that can be obtained: 8
+
+
+//note formula
+v[i , j] = max{v[i-1 , j] ,Vi + V[i-1 , j - Wi]}

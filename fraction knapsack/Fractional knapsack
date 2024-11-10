@@ -1,81 +1,84 @@
-#include<stdio.h>
+#include <stdio.h>
 
+int main() {
+    int n;
+    printf("Enter total no. of objects: ");
+    scanf("%d", &n);
 
-int main(){
+    int m;
+    printf("Enter the value of m: ");
+    scanf("%d", &m);
 
+    int v[n];
+    printf("Enter the values: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &v[i]);
+    }
 
- int n;
- printf("Enter total no. of objects: ");
- scanf("%d", &n);
- 
- int m;
- printf("Enter the value of m: ");
- scanf("%d", &m);
- 
- int v[n];
- printf("Enter the values: ");
- for(int i = 0; i < n; i++){
- 	scanf("%d", &v[i]);
- }
- 
- int w[n];
- printf("Enter the weights: ");
- for(int i = 0; i < n; i++){
- 	scanf("%d", &w[i]);
- }
- 
- float f[n];
- 
- for(int i = 0; i< n; i++){
- 	f[i] = (float)v[i] / w[i];
- }
- 
- for(int i = 0; i < n -1; i++){
- 
- 	for(int j = 0; j < n - i -1; j++){
- 		if(f[j] < f[j+1]){
- 		float temp = f[j];
- 		f[j] = f[j + 1];
- 		f[j+1] = temp;
- 		
- 		int tv = v[j];
- 		v[j] = v[j + 1];
- 		v[j+1] = tv;
- 		
- 		int tw = w[j];
- 		w[j] = w[j + 1];
- 		w[j+1] = tw;
- 		}
- 				
- 	}
- 
- }
- 
- float sp = 0;
- int sw = 0;
- 
- 
- for(int i = 0; i < n; i++){
- 	int tempsw = sw + w[i];
- 	if(tempsw < m){
- 		sw = tempsw;
- 		sp = sp + v[i];
- 	}
- 	else if(tempsw == m){
- 		sw = tempsw;
- 		sp = sp + v[i];
- 		break;
- 	}
- 	else{
- 		float frac = (float)(m-sw) / (float)w[i];
- 		printf("%f\n\n", frac);
- 		sw = m;
- 		sp = (float)sp + (float)(v[i] * frac);
- 		break;
- 	}		
- }
- printf("SW : %d \n", sw);
- printf("SP : %f \n", sp);
+    int w[n];
+    printf("Enter the weights: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &w[i]);
+    }
 
-return 0;
+    float f[n];
+    for (int i = 0; i < n; i++) {
+        f[i] = (float)v[i] / w[i];
+    }
+
+    // Sort items by value-to-weight ratio in descending order
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (f[j] < f[j + 1]) {
+                float temp = f[j];
+                f[j] = f[j + 1];
+                f[j + 1] = temp;
+
+                int tv = v[j];
+                v[j] = v[j + 1];
+                v[j + 1] = tv;
+
+                int tw = w[j];
+                w[j] = w[j + 1];
+                w[j + 1] = tw;
+            }
+        }
+    }
+
+    float sp = 0;  // Total profit
+    int sw = 0;    // Total weight in knapsack
+
+    for (int i = 0; i < n; i++) {
+        int tempsw = sw + w[i];
+        if (tempsw < m) {
+            sw = tempsw;
+            sp += v[i];
+        } else if (tempsw == m) {
+            sw = tempsw;
+            sp += v[i];
+            break;
+        } else {
+            float frac = (float)(m - sw) / (float)w[i];
+            sw = m;
+            sp += v[i] * frac;
+            break;
+        }
+    }
+    
+    printf("SW : %d \n", sw);
+    printf("SP : %f \n", sp);
+
+    return 0;
 }
+
+
+
+
+
+//input output
+Enter total no. of objects: 7
+Enter the value of m: 15
+Enter the values: 10 5 15 7 6 18 3
+Enter the weights: 2 3 5 7 1 4 1
+SW : 15 
+SP : 55.333332 

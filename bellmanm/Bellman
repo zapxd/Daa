@@ -13,6 +13,7 @@ int Bellman_Ford(int G[20][20], int V, int E, int edge[20][2]) {
     scanf("%d", &S); 
     distance[S - 1] = 0; 
 
+// Relaxing the Edges
     for (i = 0; i < V - 1; i++) {
         for (k = 0; k < E; k++) {
             u = edge[k][0], v = edge[k][1]; 
@@ -23,6 +24,7 @@ int Bellman_Ford(int G[20][20], int V, int E, int edge[20][2]) {
         }
     }
 
+// Negative Cycle Detection
     flag = 1;
     for (k = 0; k < E; k++) {
         u = edge[k][0], v = edge[k][1]; 

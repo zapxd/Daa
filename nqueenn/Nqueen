@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-int board[20], count;
+int board[20], count; 
 
 void print(int n);
 int place(int row, int column);

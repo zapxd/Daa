@@ -1,157 +1,133 @@
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 
-#define N 4
+int path[20];                                    // Store the path
+int n;                                           // Number of nodes
+int g(int k, int *v, int c[][20]);               // Cost function
+void trvpath(int k, int *v, int c[][20], int j); // Traversal function
 
-struct Node {
-    int level;
-    int path[N];
-    int reducedMatrix[N][N];
-    int cost;
-    int vertex;
-    int parent;
-};
+void main()
+{
+    int mcost;
+    path[0] = 1;
 
-struct Node* newNode(int parentMatrix[N][N], int path[], int level, int i, int j) {
-    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    printf("Enter the number of nodes (N):\n");
+    scanf("%d", &n);
 
-    for (int k = 0; k <= level; k++) {
-        node->path[k] = path[k];
-    }
+    int c[20][20];   // Adjacency matrix, assuming max size of 20 for simplicity
+    int v[20] = {0}; // Visited array initialized to 0
+    int j = 1;
 
-    for (int x = 0; x < N; x++) {
-        for (int y = 0; y < N; y++) {
-            node->reducedMatrix[x][y] = parentMatrix[x][y];
+    path[n] = 1; // Mark end of the path to start from node 1 again
+
+    printf("Enter adjacency matrix:\n");
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= n; j++)
+        {
+            scanf("%d", &c[i][j]);
         }
     }
 
-    node->path[level + 1] = j;
-    node->vertex = j;
-    node->level = level + 1;
-    node->parent = i;
-
-    for (int k = 0; k < N; k++) {
-        node->reducedMatrix[i][k] = INT_MAX;
-        node->reducedMatrix[k][j] = INT_MAX;
+    printf("Adjacency Matrix:\n");
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= n; j++)
+        {
+            printf("%d\t", c[i][j]);
+        }
+        printf("\n");
     }
 
-    node->reducedMatrix[j][0] = INT_MAX;
+    v[1] = 1;           // Starting from node 1, mark it visited
+    mcost = g(1, v, c); // Calculate minimum cost
 
-    return node;
+    for (int i = 1; i <= n; i++)
+        v[i] = 0; // Reset visited array
+    v[1] = 1;
+
+    trvpath(1, v, c, j); // Find the traversal path
+
+    printf("Minimum cost is: %d\n", mcost);
+    printf("Path: ");
+    for (int i = 0; i <= n; i++)
+    {
+        printf("%d-", path[i]);
+    }
+    printf("\n");
 }
 
-int rowReduction(int reducedMatrix[N][N], int row[N]) {
-    int cost = 0;
-    for (int i = 0; i < N; i++) {
-        row[i] = INT_MAX;
-        for (int j = 0; j < N; j++) {
-            if (reducedMatrix[i][j] < row[i]) {
-                row[i] = reducedMatrix[i][j];
-            }
+int g(int k, int *v, int c[][20])
+{
+    int min = 999, temp, flag = 0;
+
+    // Check if all nodes are visited
+    for (int i = 2; i <= n; i++)
+    {
+        if (v[i] == 0)
+            flag = 1;
+    }
+
+    if (flag == 0)
+        return c[k][1]; // Return to the starting node
+
+    for (int i = 2; i <= n; i++)
+    {
+        if (v[i] == 0)
+        {
+            v[i] = 1;                    // Mark node as visited
+            temp = c[k][i] + g(i, v, c); // Recursive call to find cost
+            if (temp < min)
+                min = temp; // Find minimum cost
+            v[i] = 0;       // Unmark node after recursion
         }
-        if (row[i] != INT_MAX) {
-            cost += row[i];
-            for (int j = 0; j < N; j++) {
-                if (reducedMatrix[i][j] != INT_MAX) {
-                    reducedMatrix[i][j] -= row[i];
+    }
+    return min;
+}
+
+void trvpath(int k, int *v, int c[][20], int j)
+{
+    int temp, min = 999, t;
+    int v1[20];
+
+    if (j < n)
+    {
+        for (int i = 2; i <= n; i++)
+        {
+            if (v[i] == 0)
+            {
+                v[i] = 1;
+                temp = c[k][i] + g(i, v, c);
+                if (temp < min)
+                {
+                    min = temp;
+                    t = i;
+                    for (int i = 1; i <= n; i++)
+                        v1[i] = v[i]; // Copy visited array
                 }
+                v[i] = 0;
             }
         }
-    }
-    return cost;
-}
-
-int columnReduction(int reducedMatrix[N][N], int col[N]) {
-    int cost = 0;
-    for (int i = 0; i < N; i++) {
-        col[i] = INT_MAX;
-        for (int j = 0; j < N; j++) {
-            if (reducedMatrix[j][i] < col[i]) {
-                col[i] = reducedMatrix[j][i];
-            }
-        }
-        if (col[i] != INT_MAX) {
-            cost += col[i];
-            for (int j = 0; j < N; j++) {
-                if (reducedMatrix[j][i] != INT_MAX) {
-                    reducedMatrix[j][i] -= col[i];
-                }
-            }
-        }
-    }
-    return cost;
-}
-
-int calculateCost(int reducedMatrix[N][N]) {
-    int row[N], col[N];
-    int cost = 0;
-
-    cost += rowReduction(reducedMatrix, row);
-    cost += columnReduction(reducedMatrix, col);
-
-    return cost;
-}
-
-void solveTSP(int costMatrix[N][N]) {
-    struct Node* pq[1000];
-    int pqSize = 0;
-
-    int path[N] = {0};
-    struct Node* root = newNode(costMatrix, path, 0, 0, 0);
-    root->cost = calculateCost(root->reducedMatrix);
-
-    pq[0] = root;
-    pqSize = 1;
-
-    while (pqSize > 0) {
-        int minCost = INT_MAX, minIndex = -1;
-        for (int i = 0; i < pqSize; i++) {
-            if (pq[i]->cost < minCost) {
-                minCost = pq[i]->cost;
-                minIndex = i;
-            }
-        }
-
-        struct Node* minNode = pq[minIndex];
-        pq[minIndex] = pq[pqSize - 1];
-        pqSize--;
-
-        if (minNode->level == N - 1) {
-            printf("Minimum cost = %d\n", minNode->cost);
-            printf("Path: ");
-            for (int i = 0; i < N; i++) {
-                printf("%d ", minNode->path[i]);
-            }
-            printf("0\n");
-            return;
-        }
-
-        for (int i = 0; i < N; i++) {
-            if (minNode->reducedMatrix[minNode->vertex][i] != INT_MAX) {
-                struct Node* child = newNode(minNode->reducedMatrix, minNode->path, minNode->level, minNode->vertex, i);
-                child->cost = minNode->cost + minNode->reducedMatrix[minNode->vertex][i] + calculateCost(child->reducedMatrix);
-
-                pq[pqSize] = child;
-                pqSize++;
-            }
-        }
-
-        free(minNode);
+        path[j] = t;
+        trvpath(t, v1, c, j + 1);
     }
 }
 
-int main() {
-    int costMatrix[N][N] = {
-        {0, 10, 15, 20},
-        {10, 0, 25, 25},
-        {15, 25, 0, 30},
-        {20, 25, 30, 0}
-    };
 
-    solveTSP(costMatrix);
 
-    return 0;
-}
 
+//iput output
+Enter the number of nodes (N):
+4
+Enter adjacency matrix:
+0 9 8 8
+12 0 13 6
+10 9 0 5
+20 15 10 0
+Adjacency Matrix:
+0	9	8	8	
+12	0	13	6	
+10	9	0	5	
+20	15	10	0	
+Minimum cost is: 35
+Path: 1-2-4-3-1-

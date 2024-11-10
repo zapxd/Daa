@@ -67,3 +67,20 @@ int main() {
     return 0;
 }
 
+//Input Output
+BELLMAN FORD
+Enter number of vertices: 5
+Enter graph in matrix form:
+0 0 6 3 0
+3 0 0 0 0
+0 0 0 1 0
+0 1 1 0 0
+0 4 0 2 0
+Enter source: 5
+Vertex 1 -> cost: 6, parent: 2
+Vertex 2 -> cost: 3, parent: 4
+Vertex 3 -> cost: 3, parent: 4
+Vertex 4 -> cost: 2, parent: 5
+Vertex 5 -> cost: 0, parent: 0
+
+No negative weight cycle

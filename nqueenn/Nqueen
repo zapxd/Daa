@@ -7,7 +7,7 @@ int board[20], count;
 void print(int n);
 int place(int row, int column);
 void queen(int row, int n);
-
+//O(NxN) -N nof queens
 int main() {
     int n;
     printf("N Queen problem using Backtracking.");

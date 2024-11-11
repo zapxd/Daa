@@ -3,7 +3,7 @@
 int max(int a, int b) {
     return (a > b) ? a : b;
 }
-
+//O(NW) N-NO OF ITEMS, W - MAX WEIGHT 
 int knapsack(int M, int w[], int val[], int n) {
     int i, j;
     int dp[n+1][M+1];
